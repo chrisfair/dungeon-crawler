@@ -24,8 +24,8 @@ fn handle_keys(root: &mut Root, player_x: &mut i32, player_y: &mut i32) -> bool 
 
         Key { code: Escape, ..} => return true,
 
-        Key { code: Up, ..} => *player_y += 1,
-        Key { code: Down, .. } => *player_y -= 1,
+        Key { code: Up, ..} => *player_y -= 1,
+        Key { code: Down, .. } => *player_y += 1,
         Key { code: Left, .. } => *player_x -= 1,
         Key { code: Right, .. } => *player_x += 1,
 
