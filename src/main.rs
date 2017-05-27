@@ -1,7 +1,7 @@
 extern crate tcod;
 
 use tcod::console::*;
-use tcod::colors;
+use tcod::colors::{self, Color};
 
 const SCREEN_WIDTH: i32 = 80;
 const SCREEN_HEIGHT: i32 = 50;
@@ -33,7 +33,7 @@ impl Tile {
         Tile {blocked: false, block_sight: false}
     }
 
-    pub fn wall -> Self {
+    pub fn wall() -> Self {
         Tile {blocked: true, block_sight: true}
     }
 }
@@ -91,17 +91,29 @@ fn make_map() -> Map {
 }
 
 
-fn render_all(root: @&mut Root, con: &mut Offscreen, objects: &[Object], map &Map) {
+fn render_all(root: &mut Root, con: &mut Offscreen, objects: &[Object], map: &Map) {
 
+    for y in 0..MAP_HEIGHT {
+        for x in 0..MAP_WIDTH {
+            let wall  = map[x as usize][y as usize].block_sight;
+            if wall {
+                con.set_char_background(x, y, COLOR_DARK_WALL, BackgroundFlag::Set);
+            } else {
+                con.set_char_background(x, y, COLOR_DARK_GROUND, BackgroundFlag::Set);
+            }
+        }
+    }
 
-    
+    for object in objects {
+        object.draw(con);
+    }
 
-
+    blit (con, (0,0), (MAP_WIDTH, MAP_HEIGHT), root, (0,0), 1.0, 1.0);
 }
 
 
 
-fn handle_keys(root: &mut Root, player: &mut Object) -> bool {
+fn handle_keys(root: &mut Root, player: &mut Object, map: &Map) -> bool {
     use tcod::input::Key;
     use tcod::input::KeyCode::*;
 
@@ -117,10 +129,10 @@ fn handle_keys(root: &mut Root, player: &mut Object) -> bool {
 
         Key { code: Escape, ..} => return true,
 
-        Key { code: Up, ..} => *player.y -= 1,
-        Key { code: Down, .. } => *player.y += 1,
-        Key { code: Left, .. } => *player.x -= 1,
-        Key { code: Right, .. } => *player.x += 1,
+        Key { code: Up, ..} => player.move_by(0, -1, map),
+        Key { code: Down, .. } => player.move_by(0, 1, map),
+        Key { code: Left, .. } => player.move_by(-1, 0, map),
+        Key { code: Right, .. } => player.move_by(1, 0, map),
 
         _ => {},
     }
@@ -142,19 +154,25 @@ fn main (){
     let npc = Objects::new(SCREEN_WIDTH /2  -5, SCREEN_HEIGHT /2, '@', colors::YELLOW);
     let mut objects = [player, npc];
 
-    let player = &mut objects[0];
+
+    let map = make_map();
 
     while !root.window_closed() {
-
+        render_all(&mut root, &mut con, &objects, &map);
+        root.flush();
 
         for object in &objects {
+            objects.clear(&mut con)
+        }
 
-    
-        let exit = handle_keys(&mut root, player);
+        let player = &mut objects[0];
+        let exit = handle_keys(&mut root, player, &map);
 
         if exit {
             break
         }
-    }
+
+
+        }
 }
 
