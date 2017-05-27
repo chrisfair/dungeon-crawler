@@ -60,21 +60,22 @@ impl Object {
         }
     }
 
-    pub fn move_by(&mut self, dx: i32, dy: i32){
+    pub fn move_by(&mut self, dx: i32, dy: i32, map: &Map){
 
-        self.x += dx;
-        self.y += dy;
+        if !map[(self.x + dx) as usize][(self.y + dy) as usize].blocked {
+            self.x += dx;
+            self.y += dy;
+        }
     }
-
-    pub fn draw(&mut self, con: &mut Console)
+    pub fn draw(&self, con: &mut Console)
     {
         con.set_default_foreground(self.color);
         con.put_char(self.x, self.y, self.char, BackgroundFlag::None);
     }
 
-    pub fn clear(&mut self, con: &mut Console)
+    pub fn clear(&self, con: &mut Console)
     {
-    con.put_char(self.x, self.y, ' ', BackgroundFlag::None)
+        con.put_char(self.x, self.y, ' ', BackgroundFlag::None)
     }
 
 
@@ -82,11 +83,11 @@ impl Object {
 }
 
 fn make_map() -> Map {
-    let mut Map  = vec![vec![Tile::empty(); MAP_HEIGHT as usize], MAP_WIDTH as usize];
+    let mut map  = vec![vec![Tile::empty(); MAP_HEIGHT as usize]; MAP_WIDTH as usize];
 
     map [30][22] = Tile::wall();
     map [50][22] = Tile::wall();
-    
+
     map
 }
 
@@ -148,10 +149,13 @@ fn main (){
         .size(SCREEN_WIDTH, SCREEN_WIDTH)
         .title("Dungeon Crawler")
         .init();
+
+    let mut con = Offscreen::new(MAP_WIDTH, MAP_HEIGHT);
+
     tcod::system::set_fps(LIMIT_FPS);
 
     let player = Object::new(SCREEN_WIDTH /2, SCREEN_HEIGHT /2, '@', colors::WHITE);
-    let npc = Objects::new(SCREEN_WIDTH /2  -5, SCREEN_HEIGHT /2, '@', colors::YELLOW);
+    let npc = Object::new(SCREEN_WIDTH /2  -5, SCREEN_HEIGHT /2, '@', colors::YELLOW);
     let mut objects = [player, npc];
 
 
@@ -162,7 +166,7 @@ fn main (){
         root.flush();
 
         for object in &objects {
-            objects.clear(&mut con)
+            object.clear(&mut con)
         }
 
         let player = &mut objects[0];
@@ -173,6 +177,6 @@ fn main (){
         }
 
 
-        }
+    }
 }
 
