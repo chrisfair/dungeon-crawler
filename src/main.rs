@@ -252,7 +252,6 @@ fn main (){
     let mut objects = [player, npc];
 
 
-
     while !root.window_closed() {
         render_all(&mut root, &mut con, &objects, &map);
         root.flush();
@@ -267,8 +266,6 @@ fn main (){
         if exit {
             break
         }
-
-
     }
 }
 
