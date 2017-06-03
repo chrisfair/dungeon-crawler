@@ -1,14 +1,19 @@
 extern crate tcod;
 extern crate rand;
 
+
 use std::cmp;
 use rand::Rng;
-use rect;
 use rect::Rect;
 use tile::Tile;
+use consts::MAP_WIDTH;
+use consts::MAP_HEIGHT;
+use consts::MAX_ROOMS;
+use consts::ROOM_MAX_SIZE;
+use consts::ROOM_MIN_SIZE;
+
 
 pub type Map = Vec<Vec<Tile>>;
-
 
 fn create_room(room: Rect, map: &mut Map) {
     for x in (room.x1 + 1)..room.x2 {
@@ -31,19 +36,19 @@ fn create_v_tunnel(y1: i32, y2: i32, y: i32, map: &mut Map) {
 }
 
 pub fn make_map() -> (Map, (i32, i32)) {
-    let mut map  = vec![vec![Tile::wall(); ::MAP_HEIGHT as usize]; ::MAP_WIDTH as usize];
+    let mut map  = vec![vec![Tile::wall(); MAP_HEIGHT as usize]; MAP_WIDTH as usize];
 
     let mut rooms = vec![];
 
     let mut starting_position = (0,0);
 
 
-    for _ in 0..::MAX_ROOMS {
-        let w = rand::thread_rng().gen_range(::ROOM_MIN_SIZE, ::ROOM_MAX_SIZE + 1);
-        let h = rand::thread_rng().gen_range(::ROOM_MIN_SIZE, ::ROOM_MAX_SIZE + 1);
+    for _ in 0..MAX_ROOMS {
+        let w = rand::thread_rng().gen_range(ROOM_MIN_SIZE, ROOM_MAX_SIZE + 1);
+        let h = rand::thread_rng().gen_range(ROOM_MIN_SIZE, ROOM_MAX_SIZE + 1);
 
-        let x  = rand::thread_rng().gen_range(0, ::MAP_WIDTH - w);
-        let y = rand::thread_rng().gen_range(0, ::MAP_HEIGHT - h);
+        let x  = rand::thread_rng().gen_range(0, MAP_WIDTH - w);
+        let y = rand::thread_rng().gen_range(0, MAP_HEIGHT - h);
 
         let new_room = Rect::new(x, y, w, h);
 

@@ -1,5 +1,5 @@
-use tcod::colors::{self, Color};
 use tcod::console::*;
+use tcod::Color;
 use map::Map;
 
 

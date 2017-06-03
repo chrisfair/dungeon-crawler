@@ -1,19 +1,24 @@
+use consts::MAP_HEIGHT;
+use consts::MAP_WIDTH;
+
+
 use tcod::console::*;
-use tcod::colors::{self, Color};
 use tcod::Console;
 use object::Object;
 use map::Map;
 use tcod::console::blit;
+use consts::COLOR_DARK_WALL;
+use consts::COLOR_DARK_GROUND;
 
 pub fn render_all(root: &mut Root, con: &mut Offscreen, objects: &[Object], map: &Map) {
 
-    for y in 0..::MAP_HEIGHT {
-        for x in 0..::MAP_WIDTH {
+    for y in 0..MAP_HEIGHT {
+        for x in 0..MAP_WIDTH {
             let wall  = map[x as usize][y as usize].block_sight;
             if wall {
-                con.set_char_background(x, y, ::COLOR_DARK_WALL, BackgroundFlag::Set);
+                con.set_char_background(x, y, COLOR_DARK_WALL, BackgroundFlag::Set);
             } else {
-                con.set_char_background(x, y, ::COLOR_DARK_GROUND, BackgroundFlag::Set);
+                con.set_char_background(x, y, COLOR_DARK_GROUND, BackgroundFlag::Set);
             }
         }
     }
@@ -22,7 +27,7 @@ pub fn render_all(root: &mut Root, con: &mut Offscreen, objects: &[Object], map:
         object.draw(con);
     }
 
-    blit (con, (0,0), (::MAP_WIDTH, ::MAP_HEIGHT), root, (0,0), 1.0, 1.0);
+    blit (con, (0,0), (MAP_WIDTH, MAP_HEIGHT), root, (0,0), 1.0, 1.0);
 }
 
 
